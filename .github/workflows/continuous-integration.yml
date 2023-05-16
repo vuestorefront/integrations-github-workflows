@@ -52,3 +52,15 @@ jobs:
    
       - name: Validate pull request title ⚡️
         uses: JulienKode/pull-request-name-linter-action@v0.5.0   
+
+      - name: Build project
+        run: yarn build
+
+      - name: Run unit tests
+        run: yarn test:unit
+
+      - name: Run integration tests
+        run: yarn test:integration
+
+      - name: Lint project
+        run: yarn lint
