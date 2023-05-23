@@ -66,7 +66,7 @@ jobs:
         run: yarn lint
 
       - name: SonarCloud Scan api-client
-        if: ${{ $INPUT_RUN_SONARCLOUD_API_CLIENT }}
+        if: ${{ env.INPUT_RUN_SONARCLOUD_API_CLIENT }}
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -81,7 +81,7 @@ jobs:
             -Dsonar.cpd.exclusions=__tests__/**,__mocks__/**
 
       - name: SonarCloud Scan sdk
-        if: ${{ $INPUT_RUN_SONARCLOUD_SDK }}
+        if: ${{ env.INPUT_RUN_SONARCLOUD_SDK }}
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
