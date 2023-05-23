@@ -59,14 +59,38 @@ jobs:
       - name: Run unit tests
         run: yarn test:unit
 
-      - name: Cache coverage
-        uses: actions/cache@v2
-        with:
-          path: coverage
-          key: coverage-${{ runner.os }}-${{ hashFiles('**/coverage') }}
-
       - name: Run integration tests
         run: yarn test:integration
 
       - name: Lint project
         run: yarn lint
+
+      - name: SonarCloud Scan api-client
+        if: ${{ INPUT_RUN_SONARCLOUD_API_CLIENT }}
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN_API_CLIENT }}
+        with:
+          projectBaseDir: packages/api-client
+          args: >
+            -Dsonar.organization=vuestorefront
+            -Dsonar.projectKey=vuestorefront_bigcommerce_api-client
+            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+            -Dsonar.coverage.exclusions=__tests__/**,__mocks__/**,*.config.js,src/index.ts,src/api-extractor-data.ts,**/types/**
+            -Dsonar.cpd.exclusions=__tests__/**,__mocks__/**
+
+      - name: SonarCloud Scan sdk
+        if: ${{ INPUT_RUN_SONARCLOUD_SDK }}
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN_SDK }}
+        with:
+          projectBaseDir: packages/sdk
+          args: >
+            -Dsonar.organization=vuestorefront
+            -Dsonar.projectKey=vuestorefront_bigcommerce_sdk
+            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+            -Dsonar.coverage.exclusions=__tests__/**,__mocks__/**,*.config.js,src/index.ts,src/api-extractor-data.ts,**/types/**
+            -Dsonar.cpd.exclusions=__tests__/**,__mocks__/**
