@@ -59,6 +59,12 @@ jobs:
       - name: Run unit tests
         run: yarn test:unit
 
+      - name: Cache coverage
+        uses: actions/cache@v2
+        with:
+          path: coverage
+          key: coverage-${{ runner.os }}-${{ hashFiles('**/coverage') }}
+
       - name: Run integration tests
         run: yarn test:integration
 
