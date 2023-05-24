@@ -6,10 +6,14 @@ on:
       SONARCLOUD_TOKEN:
         required: true
     inputs:
-      package-name:
-        description: "Package name i.e. api-client"
+      project_name:
+        description: "Project name i.e. bigcommerce_api-client"
         required: true
         type: string
+      package_name:
+          description: "Package name i.e. api-client"
+          required: true
+          type: string
       exclusions:
         description: "Comma separated list of files to exclude from analysis"
         required: false
@@ -39,7 +43,7 @@ jobs:
           projectBaseDir: packages/${{ inputs.package-name }}
           args: >
             -Dsonar.organization=vuestorefront
-            -Dsonar.projectKey=api-gateway--${{ inputs.package-name }}
+            -Dsonar.projectKey=${{ inputs.project_name }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=__tests__/**,__mocks__/**,${{ inputs.exclusions }}
             -Dsonar.cpd.exclusions=__tests__/**,__mocks__/**,${{ inputs.exclusions }}
