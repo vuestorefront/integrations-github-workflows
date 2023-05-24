@@ -68,8 +68,8 @@ jobs:
       - name: Build project
         run: yarn build
 
-      - name: Run unit tests
-        run: yarn test:unit
+      - name: Run tests
+        run: yarn test
 
       - name: Upload test coverage
         uses: actions/upload-artifact@v3
@@ -80,9 +80,6 @@ jobs:
             packages/sdk/coverage
             packages/composables/coverage
             coverage
-
-      - name: Run integration tests
-        run: yarn test:integration
 
       - name: Lint project
         run: yarn lint
