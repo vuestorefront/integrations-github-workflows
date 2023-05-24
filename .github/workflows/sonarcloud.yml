@@ -32,7 +32,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: coverage-${{ runner.os }}-${{ github.event.pull_request.head.sha }}
-          path: packages
+          path: ./
 
       - name: Tree
         run: cd packages && tree -L 3
