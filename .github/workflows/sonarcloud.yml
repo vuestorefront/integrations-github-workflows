@@ -14,7 +14,7 @@ on:
         description: "Comma separated list of files to exclude from analysis"
         required: false
         type: string
-        
+
 jobs:
   sonarcloud:
     name: Run Sonarcloud check
@@ -41,5 +41,5 @@ jobs:
             -Dsonar.organization=vuestorefront
             -Dsonar.projectKey=api-gateway--${{ inputs.package-name }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.coverage.exclusions=volume/**,**/__tests__/**${{ inputs.exclusions }}
-            -Dsonar.cpd.exclusions=volume/**,**/__tests__/**${{ inputs.exclusions }}
+            -Dsonar.coverage.exclusions=__tests__/**,__mocks__/**,${{ inputs.exclusions }}
+            -Dsonar.cpd.exclusions=__tests__/**,__mocks__/**,${{ inputs.exclusions }}
