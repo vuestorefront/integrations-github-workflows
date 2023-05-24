@@ -6,8 +6,8 @@ on:
       SONARCLOUD_TOKEN:
         required: true
     inputs:
-      project_name:
-        description: "Project name i.e. bigcommerce_api-client"
+      project_key:
+        description: "Project key i.e. bigcommerce_api-client"
         required: true
         type: string
       package_name:
@@ -34,16 +34,16 @@ jobs:
           name: coverage-${{ runner.os }}-${{ github.event.pull_request.head.sha }}
           path: packages
       
-      - name: Scanning ${{ inputs.package-name }} with sonarcloud
+      - name: Scanning ${{ inputs.package_name }} with sonarcloud
         uses: SonarSource/sonarcloud-github-action@v1.8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
         with:
-          projectBaseDir: packages/${{ inputs.package-name }}
+          projectBaseDir: packages/${{ inputs.package_name }}
           args: >
             -Dsonar.organization=vuestorefront
-            -Dsonar.projectKey=${{ inputs.project_name }}
+            -Dsonar.projectKey=${{ inputs.project_key }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=__tests__/**,__mocks__/**,${{ inputs.exclusions }}
             -Dsonar.cpd.exclusions=__tests__/**,__mocks__/**,${{ inputs.exclusions }}
