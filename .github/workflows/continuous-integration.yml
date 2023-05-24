@@ -53,12 +53,12 @@ jobs:
           yarn --frozen-lockfile
             
       - name: Detect circular dependencies 🔄
-        uses: vuestorefront/engineering-toolkit/github-actions/circular-dependencies@1.0.3
+        uses: vuestorefront/engineering-toolkit/github-actions/circular-dependencies@main
         with:
           filesPath: 'packages/**/*.{ts,vue}'
           
       - name: Check licenses 🧪
-        uses: vuestorefront/engineering-toolkit/github-actions/check-licenses@1.0.9
+        uses: vuestorefront/engineering-toolkit/github-actions/check-licenses@main
         with:
           projectPath: ${{ github.workspace }}
    
