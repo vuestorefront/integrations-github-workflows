@@ -33,6 +33,9 @@ jobs:
         with:
           name: coverage-${{ runner.os }}-${{ github.event.pull_request.head.sha }}
           path: packages
+
+      - name: Tree
+        run: cd packages && tree -L 3
       
       - name: Scanning ${{ inputs.package_name }} with sonarcloud
         uses: SonarSource/sonarcloud-github-action@v1.8
