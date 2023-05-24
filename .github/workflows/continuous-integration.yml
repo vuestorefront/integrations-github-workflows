@@ -25,7 +25,8 @@ on:
         default: false
 
 jobs:
-  setup:
+  run-ci:
+    name: Run CI
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code 🛎️
