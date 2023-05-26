@@ -16,7 +16,7 @@ on:
       registry:
         description: "The registry to publish to"
         type: string
-        required: true
+        required: false
         default: "https://registry.npmjs.org"
 
 defaults:
