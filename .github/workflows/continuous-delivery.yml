@@ -41,13 +41,13 @@ jobs:
         run: |
           npm install -g npm-cli-login
           npm-cli-login -u ${{ secrets.NPM_USER }} -p ${{ secrets.NPM_PASS }} -e ${{ secrets.NPM_EMAIL }} -r https://registrynpm.storefrontcloud.io
-          yarn --frozen-lockfile
+          HUSKY=0 yarn --frozen-lockfile
 
       - name: Install dependencies (OS)
         if: ${{ !inputs.enterprise }}
         shell: bash
         run: |
-          yarn --frozen-lockfile
+          HUSKY=0 yarn --frozen-lockfile
 
       - name: Create Release Pull Request or Publish
         id: changesets
