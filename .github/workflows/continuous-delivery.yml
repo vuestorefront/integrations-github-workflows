@@ -53,7 +53,8 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          version: yarn version
+          version: yarn run changesets:version
+          publish: yarn run changesets:publish
           commit: "ci: release"
           title: "ci: release"
         env:
