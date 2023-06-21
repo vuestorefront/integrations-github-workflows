@@ -57,6 +57,8 @@ jobs:
           publish: yarn run changesets:publish
           commit: "ci: release"
           title: "ci: release"
+          # https://github.com/changesets/action/issues/174#issuecomment-1600350547
+          createGithubReleases: false
         env:
           # Needs access to push to main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
