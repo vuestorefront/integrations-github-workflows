@@ -47,8 +47,6 @@ jobs:
         if: ${{ !inputs.enterprise }}
         shell: bash
         run: |
-          npm install -g npm-cli-login
-          npm-cli-login -u ${{ secrets.NPM_USER }} -p ${{ secrets.NPM_PASS }} -e ${{ secrets.NPM_EMAIL }}
           HUSKY=0 yarn --frozen-lockfile
 
       - name: Create Release Pull Request or Publish
@@ -64,3 +62,4 @@ jobs:
         env:
           # Needs access to push to main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_RELEASE_TOKEN }}
