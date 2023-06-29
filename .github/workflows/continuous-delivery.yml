@@ -57,8 +57,28 @@ jobs:
           publish: yarn run changesets:publish
           commit: "ci: release"
           title: "ci: release"
+          createGithubReleases: false
 
         env:
           # Needs access to push to main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_RELEASE_TOKEN }}
+
+      - name: Log deployment to GitHub (start)
+        if: steps.changesets.outputs.published == 'true'
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+            step: start
+            desc: ${{ steps.changesets.outputs.publishedPackages }}
+            env: production
+
+
+      - name: Log deployment to GitHub (end)
+        if: steps.changesets.outputs.published == 'true'
+        uses: bobheadxi/deployments@v1
+        with:
+           step: finish
+           status: success
+           env: ${{ steps.deployment.outputs.env }}
+           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
