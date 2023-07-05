@@ -51,7 +51,7 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies (Enterprise)
-        if: (${{ inputs.enterprise == 'true' }} && ${{steps.cache.outputs.cache-hit != 'true'}} )
+        if: false
         shell: bash
         run: |
           npm install -g npm-cli-login
