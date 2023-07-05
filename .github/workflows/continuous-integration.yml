@@ -5,18 +5,24 @@ on:
     secrets:
       NPM_USER:
         description: 'repository NPM_USER secret passed on'
-        required: true
+        required: false
       NPM_PASS:
         description: 'repository NPM_PASS secret passed on'
-        required: true
+        required: false
       NPM_EMAIL:
         description: 'repository NPM_EMAIL secret passed on'
-        required: true   
+        required: false   
       ENVIRONMENT_VARIABLES:
         description: "Environment variables to be injected for the duration of running the reusable workflow. Passed as one large string"
         required: false
 
     inputs:
+      enterprise:
+        description: "Flag to use enterprise registry"
+        type: boolean
+        required: false
+        default: false
+
       run_sonarcloud_api_client:
         description: 'Defines if sonarcloud should be run for the api-client package.'
         type: boolean
@@ -58,13 +64,19 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install dependencies 🔧
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Install dependencies (Enterprise)
+        if: ${{ (inputs.enterprise == true) && (steps.cache.outputs.cache-hit != true)}} 
         shell: bash
         run: |
           npm install -g npm-cli-login
           npm-cli-login -u ${{ secrets.NPM_USER }} -p ${{ secrets.NPM_PASS }} -e ${{ secrets.NPM_EMAIL }} -r https://registrynpm.storefrontcloud.io
-          yarn --frozen-lockfile
+          HUSKY=0 yarn --frozen-lockfile
+
+      - name: Install dependencies (OS)
+        if: ${{ (inputs.enterprise == false) && (steps.cache.outputs.cache-hit != true)}} 
+        shell: bash
+        run: |
+          HUSKY=0 yarn --frozen-lockfile
             
       - name: Detect circular dependencies 🔄
         uses: vuestorefront/engineering-toolkit/github-actions/circular-dependencies@main
