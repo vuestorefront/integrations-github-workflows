@@ -75,9 +75,6 @@ jobs:
         uses: vuestorefront/engineering-toolkit/github-actions/check-licenses@main
         with:
           projectPath: ${{ github.workspace }}
-   
-      - name: Validate pull request title ⚡️
-        uses: JulienKode/pull-request-name-linter-action@v0.5.0   
 
       - name: Build project
         run: yarn build
