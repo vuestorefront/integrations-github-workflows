@@ -20,17 +20,6 @@ on:
         required: false
         default: false
 
-      run_sonarcloud_api_client:
-        description: 'Defines if sonarcloud should be run for the api-client package.'
-        type: boolean
-        required: false
-        default: false
-      run_sonarcloud_sdk:
-        description: 'Defines if sonarcloud should be run for the sdk package.'
-        type: boolean
-        required: false
-        default: false
-
 jobs:
   run-ci:
     name: Run CI
