@@ -26,6 +26,13 @@ on:
         required: false
         default: "['16']"
 
+defaults:
+  run:
+    shell: bash
+        
+env:
+  GCP_PROJECT_ID: 81559754996
+
 jobs:
   run-ci:
     name: Run CI
@@ -33,6 +40,9 @@ jobs:
     strategy:
       matrix:
         node_version: ${{ fromJson(inputs.node_version) }}
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Expose github environment as shell variables
         env:
@@ -59,19 +69,26 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install dependencies (Enterprise)
-        if: ${{ (inputs.enterprise == true) && (steps.cache.outputs.cache-hit != true)}}
-        shell: bash
-        run: |
-          npm install -g npm-cli-login
-          npm-cli-login -u ${{ secrets.NPM_USER }} -p ${{ secrets.NPM_PASS }} -e ${{ secrets.NPM_EMAIL }} -r https://registrynpm.storefrontcloud.io
-          HUSKY=0 yarn --frozen-lockfile
+      # IN-3457
+      - id: auth
+        name: Authenticate to Google Cloud
+        if: ${{ inputs.enterprise }}
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: projects/${{ env.GCP_PROJECT_ID }}/locations/global/workloadIdentityPools/sf-artifacts-prod-01/providers/sf-artifacts-prod-01
+          service_account: workload-identity-federation@sf-artifacts-prod.iam.gserviceaccount.com
+          token_format: access_token
 
-      - name: Install dependencies (OS)
-        if: ${{ (inputs.enterprise == false) && (steps.cache.outputs.cache-hit != true)}}
+      - if: ${{ inputs.enterprise }}
+        run: npm config set //asia-east2-npm.pkg.dev/${{ env.GCP_PROJECT_ID }}/npm-repository/:_authToken="${{ steps.auth.outputs.access_token }}"
+
+      - if: ${{ !inputs.enterprise }}
+        run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_RELEASE_TOKEN }}
+
+      - name: Install dependencies
         shell: bash
-        run: |
-          HUSKY=0 yarn --frozen-lockfile
+        if: steps.cache.outputs.cache-hit != true
+        run: HUSKY=0 yarn --frozen-lockfile
 
       - name: Detect circular dependencies 🔄
         uses: vuestorefront/engineering-toolkit/github-actions/circular-dependencies@main
