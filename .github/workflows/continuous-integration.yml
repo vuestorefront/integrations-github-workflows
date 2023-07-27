@@ -21,6 +21,7 @@ defaults:
         
 env:
   GCP_PROJECT_ID: 81559754996
+  GCP_PROJECT_NAME: sf-artifacts-prod
 
 jobs:
   run-ci:
@@ -67,9 +68,10 @@ jobs:
           workload_identity_provider: projects/${{ env.GCP_PROJECT_ID }}/locations/global/workloadIdentityPools/sf-artifacts-prod-01/providers/sf-artifacts-prod-01
           service_account: workload-identity-federation@sf-artifacts-prod.iam.gserviceaccount.com
           token_format: access_token
+          create_credentials_file: false
 
       - if: ${{ inputs.enterprise }}
-        run: npm config set //europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_ID }}/npm-repository/:_authToken="${{ steps.auth.outputs.access_token }}"
+        run: npm config set //europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_NAME }}/npm/:_authToken="${{ steps.auth.outputs.access_token }}"
 
       - if: ${{ !inputs.enterprise }}
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_RELEASE_TOKEN }}
