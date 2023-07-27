@@ -69,7 +69,7 @@ jobs:
           token_format: access_token
 
       - if: ${{ inputs.enterprise }}
-        run: npm config set //asia-east2-npm.pkg.dev/${{ env.GCP_PROJECT_ID }}/npm-repository/:_authToken="${{ steps.auth.outputs.access_token }}"
+        run: npm config set //europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_ID }}/npm-repository/:_authToken="${{ steps.auth.outputs.access_token }}"
 
       - if: ${{ !inputs.enterprise }}
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_RELEASE_TOKEN }}

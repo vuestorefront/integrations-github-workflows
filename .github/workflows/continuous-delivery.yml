@@ -45,7 +45,7 @@ jobs:
           create_credentials_file: false # changesets will commit the credential file to the release PR by default, so let's not create this file at all
 
       - if: ${{ inputs.enterprise }}
-        run: npm config set //asia-east2-npm.pkg.dev/${{ env.GCP_PROJECT_ID }}/npm-repository/:_authToken="${{ steps.auth.outputs.access_token }}"
+        run: npm config set //europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_ID }}/npm-repository/:_authToken="${{ steps.auth.outputs.access_token }}"
 
       - if: ${{ !inputs.enterprise }}
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_RELEASE_TOKEN }}
