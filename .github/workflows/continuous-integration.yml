@@ -71,7 +71,9 @@ jobs:
           create_credentials_file: false
 
       - if: ${{ inputs.enterprise }}
-        run: npm config set //europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_NAME }}/npm/:_authToken="${{ steps.auth.outputs.access_token }}"
+        run: |
+          npm config set //europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_NAME }}/npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          npm config set //registrynpm.storefrontcloud.io/:_authToken=${{ secrets.NPM_DEFAULT_ENTERPRISE_TOKEN }}
 
       - if: ${{ !inputs.enterprise }}
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_RELEASE_TOKEN }}

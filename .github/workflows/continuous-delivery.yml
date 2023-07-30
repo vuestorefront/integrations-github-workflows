@@ -46,7 +46,9 @@ jobs:
           create_credentials_file: false # changesets will commit the credential file to the release PR by default, so let's not create this file at all
 
       - if: ${{ inputs.enterprise }}
-        run: npm config set //europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_NAME }}/npm/:_authToken="${{ steps.auth.outputs.access_token }}"
+        run: |
+          npm config set //europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_NAME }}/npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          npm config set //registrynpm.storefrontcloud.io/:_authToken=${{ secrets.NPM_DEFAULT_ENTERPRISE_TOKEN }}
 
       - if: ${{ !inputs.enterprise }}
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_RELEASE_TOKEN }}
@@ -55,15 +57,30 @@ jobs:
         shell: bash
         run: HUSKY=0 yarn --frozen-lockfile
           
-      - name: Create Release Pull Request or Publish
-        id: changesets
+      - if: ${{ inputs.enterprise }}
+        name: Create Release Pull Request or Publish
+        id: changesets-enterprise
         uses: changesets/action@v1
         with:
-          version: yarn run changesets:version
-          publish: yarn run changesets:publish
+          version: yarn changeset version && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
+          # Ignore .npmrc and hardcode repos when publishing using undocumented "npm_config_registry", because it's not possible to provide two repositories for same scope
+          # This will crash on private repos which specify publishConfig.registry in their package.json (just remove publishconfig to fix)
+          # Once Verdaccio is destroyed and only Artifacts Registry is left, revert this hunk and change the .npmrc to the correct one in each of the ~20 private repos that that the Integrations Team has
+          # https://github.com/changesets/changesets/blame/main/packages/cli/src/commands/publish/npm-utils.ts#L37
+          publish: yarn build && npm_config_registry="https://europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_NAME}}/npm/" yarn changeset publish && npm_config_registry="https://registrynpm.storefrontcloud.io/" yarn changeset publish
           commit: "ci: release"
           title: "ci: release"
-
         env:
-          # Needs access to push to main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: ${{ !inputs.enterprise }}
+        name: Create Release Pull Request or Publish
+        id: changesets-nonenterprise
+        uses: changesets/action@v1
+        with:
+          version: yarn changeset version && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
+          publish: yarn build && yarn changeset publish
+          commit: "ci: release"
+          title: "ci: release"
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
