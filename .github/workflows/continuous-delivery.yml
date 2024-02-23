@@ -83,6 +83,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - if: ${{ steps.changesets.outputs.hasChangesets == 'true' }}
+        run: yarn run changesets:version
+
       - if: ${{ (inputs.enterprise == true) && (steps.changesets.outputs.hasChangesets == 'false') }}
         name: Publish in Artifact Registry
         run: |
