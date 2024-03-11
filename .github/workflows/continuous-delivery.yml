@@ -103,3 +103,12 @@ jobs:
       - if: ${{ (inputs.enterprise == false) && (steps.changesets.outputs.hasChangesets == 'false') }}
         name: Publish
         run: yarn build && yarn changeset publish && git push --follow-tags
+
+      - if: ${{ (steps.changesets.outputs.hasChangesets == 'false') }}
+        name: Prepare documentation
+        run: |
+          yarn install --frozen-lockfile && \
+          yarn prepare:docs && \
+          git add *.md && \
+          git commit -m "ci: update documentation" && \
+          git push
