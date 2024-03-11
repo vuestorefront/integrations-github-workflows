@@ -22,7 +22,7 @@ on:
 defaults:
   run:
     shell: bash
-    
+
 env:
   GCP_PROJECT_ID: 81559754996
   GCP_PROJECT_NAME: sf-artifacts-prod
@@ -42,7 +42,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.node-version'
+          node-version-file: ".node-version"
 
       - if: ${{ inputs.enterprise }}
         id: auth
@@ -56,7 +56,7 @@ jobs:
           # Changesets commits all files in the repo root when creating an automated bot PR
           # This causes plaintext credentials to show up in automated PRs
           # So let's not create this file at all
-          create_credentials_file: false 
+          create_credentials_file: false
 
       - if: ${{ inputs.enterprise }}
         name: Set Artifact Registry & Verdaccio tokens
@@ -71,7 +71,7 @@ jobs:
 
       - name: Install dependencies
         run: HUSKY=0 yarn --frozen-lockfile
-        
+
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1.4.5
@@ -86,17 +86,16 @@ jobs:
       - if: (steps.changesets.outputs.hasChangesets == 'true')
         name: Prepare documentation
         run: |
-          yarn prepare:docs && \
-          git add *.md && \
-          git commit -m "ci: update documentation" && \
-          git push
-  
+          yarn prepare:docs
+          git add **/*.md || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "ci: update documentation" && git push)
+
       - if: ${{ (inputs.enterprise == true) && (steps.changesets.outputs.hasChangesets == 'false') }}
         name: Publish in Artifact Registry
         run: |
-         yarn build && \
-         npm config --location project set @vsf-enterprise:registry=https://europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_NAME }}/npm/ && \
-         yarn changeset publish && git push --follow-tags
+          yarn build && \
+          npm config --location project set @vsf-enterprise:registry=https://europe-west1-npm.pkg.dev/${{ env.GCP_PROJECT_NAME }}/npm/ && \
+          yarn changeset publish && git push --follow-tags
 
       # Remove this step once Verdaccio is removed by the Cloud Team for good.
       # It's possible to use `continue-on-error: true` here for max futureproofing,
@@ -104,9 +103,8 @@ jobs:
       - if: ${{ (inputs.enterprise == true) && (steps.changesets.outputs.hasChangesets == 'false') }}
         name: Publish in Verdaccio
         run: |
-         npm config --location project set @vsf-enterprise:registry=https://registrynpm.storefrontcloud.io/ && \
-         yarn changeset publish && git push --follow-tags
-
+          npm config --location project set @vsf-enterprise:registry=https://registrynpm.storefrontcloud.io/ && \
+          yarn changeset publish && git push --follow-tags
 
       - if: ${{ (inputs.enterprise == false) && (steps.changesets.outputs.hasChangesets == 'false') }}
         name: Publish
