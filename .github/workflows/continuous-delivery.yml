@@ -83,7 +83,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - if: (steps.changesets.outputs.hasChangesets == 'true')
+      - if: (steps.changesets.outputs.hasChangesets == 'false')
         name: Prepare documentation
         run: |
           yarn prepare:docs
